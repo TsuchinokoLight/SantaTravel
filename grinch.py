@@ -8,8 +8,7 @@ class Grinch:
         self.city_map = city_map
         self.meter = 0
         self.record = ["Path"]
-        self.here = self.city_map.pop_next_city()
-        self.keep_record(self.here)
+        self.keep_record(self.city_map.here)
 
     def output_record(self):
         # CSVへ書き込み
@@ -21,8 +20,8 @@ class Grinch:
         self.record.append(str(int(city["CityId"])))
 
     def goto(self, next_city):
-        self.meter += calc_distance(self.here, next_city)
-        self.here = next_city
+        self.meter += calc_distance(self.city_map.here, next_city)
+        self.city_map.here = next_city
 
     def start_hell_odyssey(self):
         while True:
