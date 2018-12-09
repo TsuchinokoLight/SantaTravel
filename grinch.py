@@ -20,7 +20,8 @@ class Grinch:
         self.record.append(str(int(city["CityId"])))
 
     def goto(self, next_city):
-        self.meter += calc_distance(self.city_map.here, next_city)
+        here = self.city_map.here
+        self.meter += calc_distance(here["X"], here["Y"], next_city["X"], next_city["Y"])
         self.city_map.here = next_city
 
     def start_hell_odyssey(self):
@@ -28,8 +29,12 @@ class Grinch:
             # データ群から一つ取り出し（ポップ）して、移動
             try:
                 next_city = self.city_map.pop_next_city()
+                if next_city is None:
+                    print("END")
+                    self.output_record()
+                    return
             except StopIteration:
-                break
+                return
 
             # ポイントへ移動
             self.goto(next_city)
@@ -37,4 +42,3 @@ class Grinch:
             # 記録
             self.keep_record(next_city)
 
-        self.output_record()

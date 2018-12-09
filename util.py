@@ -11,12 +11,11 @@ def is_prime_num(q):
     return pow(2, q - 1, q) == 1
 
 
-def calc_distance(from_city, dest_city):
-    if fast_mode is True:
-        distance_x = np.abs(dest_city["X"] - from_city["X"])
-        distance_y = np.abs(dest_city["Y"] - from_city["Y"])
-        return distance_x + distance_y
-    else:
-        here_point = np.array([from_city["X"], from_city["Y"]])
-        dest_point = np.array([dest_city["X"], dest_city["Y"]])
-        return np.linalg.norm(here_point - dest_point)
+def calc_distance(from_x, from_y, dest_x, dest_y):
+    distance_x = np.abs(dest_x - from_x)
+    distance_y = np.abs(dest_y - from_y)
+    return distance_x + distance_y
+
+
+def value2coordinate(value):
+    return int(round(value))
