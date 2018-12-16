@@ -117,7 +117,7 @@ class CityExplorer:
         window_side = 1
 
         while window_side * 2 < self.rows and window_side * 2 < self.cols:
-            if window_side > 100:
+            if window_side > 300:
                 # ここまでくると処理が遅いので、ワープ
                 warp_city = self.rest_city_df.loc[0]
                 self.near_cities.append(warp_city)

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import city_map_manager
 from util import calc_distance
+import pandas as pd
 
 
 class Grinch:
@@ -24,6 +25,18 @@ class Grinch:
         self.meter += calc_distance(here["X"], here["Y"], next_city["X"], next_city["Y"])
         self.city_map.here = next_city
 
+    def restart(self):
+        last_city = None
+        for saved_city in self.city_map.read_save_file():
+            self.keep_record(saved_city)
+            last_city = saved_city
+        if last_city is None:
+            print("Error in Reading save file")
+            return
+        print("Finish reading save file")
+        self.goto(last_city)
+        self.start_hell_odyssey()
+
     def start_hell_odyssey(self):
         while True:
             # データ群から一つ取り出し（ポップ）して、移動
@@ -33,7 +46,11 @@ class Grinch:
                     print("END")
                     self.output_record()
                     return
-            except StopIteration:
+            except:
+                print("Illegal END")
+                self.output_record()
+                import traceback
+                traceback.print_exc()
                 return
 
             # ポイントへ移動
@@ -41,4 +58,6 @@ class Grinch:
 
             # 記録
             self.keep_record(next_city)
+            print(self.record[-1])
+
 
