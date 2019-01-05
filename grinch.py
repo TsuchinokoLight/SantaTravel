@@ -48,12 +48,12 @@ class Grinch:
                     print("END")
                     self.output_record()
                     return
-            except:
+            except Exception as e:
                 print("Illegal END")
                 self.output_record()
-                import traceback
-                traceback.print_exc()
-                return
+                #import traceback
+                #traceback.print_exc()
+                raise e
 
             # ポイントへ移動
             self.goto(next_city)

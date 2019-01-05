@@ -1,7 +1,6 @@
-import pandas as pd
-import numpy as np
 from util import value2coordinate
 import math
+import Exceptions
 
 MOVE_DOWN = 2
 MOVE_UP = 8
@@ -23,10 +22,6 @@ class CityExplorer:
         self.cursor_x = 0
         self.cursor_y = 0
         self.found_counter = K_NN_NUM
-
-    def __find_mahalanobis_near(self, from_here):
-        # return city index
-        return 0
 
     def __reset_found_counter(self, found_counter):
         # 探索数（# k-Nearest Neighbor）
@@ -62,29 +57,21 @@ class CityExplorer:
         return id_arr
 
     def __add_cursor_city(self):
-        # ・self.rest_city_df[ID(INDEX)指定]
-        # ・今持っている情報は、X,Yの情報
-        # ・self.imgの値はIDの総和
-        # ・rest_city_dfから見つけたら、img-IDを行う
-        # ・とりあえず、X,Y→ID変換を行う
+        # ①X,Y→ID変換を行う
+        # ②self.near_citiesに候補を追加
 
-        #candidates_x = self.rest_city_df[(self.cursor_x <= self.rest_city_df["X"]) & (self.rest_city_df["X"] < self.cursor_x + 1)]
-        #target_cities = candidates_x[(self.cursor_y <= candidates_x["Y"]) & (candidates_x["Y"] < self.cursor_y + 1)]
-
-        count = 0
         target_cities = self.__xy2city_id(self.cursor_x, self.cursor_y)
         if target_cities is None:
-            return 0
+            print("Error in __add_cursor_city: No target_cities...")
+            raise Exceptions.NotFoundCityException()
+
         for target_city in target_cities:
             # 同じ座標に複数の街がある場合を考慮してループ
             self.near_cities.append(target_city)
             self.found_counter = self.found_counter - 1
-            count = count + 1
             if self.found_counter <= 0:
                 # 一定数になったら終了
                 break
-
-        return count
 
     def __findmove_x(self, step, length):
         for move_cnt in range(length):
@@ -125,7 +112,7 @@ class CityExplorer:
             print("Direction ERROR")
             return 0
 
-    def find_eucledean_near(self, from_city):
+    def __find_eucledean_near(self, from_city):
         # 探索
         from_x = value2coordinate(from_city["X"])
         from_y = value2coordinate(from_city["Y"])
@@ -169,3 +156,22 @@ class CityExplorer:
             window_side = window_side + 2
 
         return self.near_cities
+
+    def __find_mahalanobis_near(self, near_cities):
+        # 本来はここでfind_mahalanobis_near使う
+        # とりあえず先頭返す
+        near_city = near_cities[0]
+        return near_city
+
+    def find_nearest_city(self, from_city):
+        near_cities = self.__find_eucledean_near(from_city)
+        if len(near_cities) == 0 or near_cities is None:
+            return None
+        nearest_city = self.__find_mahalanobis_near(near_cities)
+
+        # 同じ座標に重複していることも考慮
+        near_x = value2coordinate(nearest_city["X"])
+        near_y = value2coordinate(nearest_city["Y"])
+        self.img[near_y, near_x] = self.img[near_y, near_x] - nearest_city["CityId"]
+
+        return nearest_city

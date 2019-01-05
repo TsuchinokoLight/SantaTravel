@@ -22,21 +22,14 @@ class CityMapManager:
 
     def pop_next_city(self):
         city_explorer = CityExplorer(self.img, self.rest_city_df)
-        near_cities = city_explorer.find_eucledean_near(self.here)
-        if len(near_cities) == 0 or near_cities is None:
-            return None
+
+        # search
+        nearest_city = city_explorer.find_nearest_city(self.here)
+
+        # update
         self.rest_city_df = city_explorer.rest_city_df
         self.img = city_explorer.img
-
-        # 本来はここでfind_mahalanobis_near使う
-        # とりあえず先頭返す
-        near_city = near_cities[0]
-        # roundしたため、同じ座標に重複していることも考慮
-        near_x = value2coordinate(near_city["X"])
-        near_y = value2coordinate(near_city["Y"])
-        self.img[near_y, near_x] = self.img[near_y, near_x] - near_city["CityId"]
-
-        return self.__pop_city(near_city["CityId"])
+        return self.__pop_city(nearest_city["CityId"])
 
 
     def __make_citymap_image(self):
