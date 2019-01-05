@@ -11,6 +11,8 @@ MOVE_LEFT = 4
 K_NN_NUM = 3
 
 
+SEARCH_RANGE = 1000
+
 class CityExplorer:
     def __init__(self, img, rest_city_df):
         self.near_cities = []
@@ -49,18 +51,33 @@ class CityExplorer:
             cursor_x = 0
         return cursor_x
 
-    def __add_cursor_city(self):
-        count = 0
-        candidates_x = self.rest_city_df[(self.cursor_x <= self.rest_city_df["X"]) & (self.rest_city_df["X"] < self.cursor_x + 1)]
-        target_cities = candidates_x[(self.cursor_y <= candidates_x["Y"]) & (candidates_x["Y"] < self.cursor_y + 1)]
+    def __xy2city_id(self, x, y):
+        x_arr = self.rest_city_df["X"].values
+        y_arr = self.rest_city_df["Y"].values
+        id_arr = []
 
+        for index in range(self.rest_city_df.shape[0]):
+            if value2coordinate(x_arr[index]) == x and value2coordinate(y_arr[index]) == y:
+                id_arr.append(self.rest_city_df.iloc[index])
+        return id_arr
+
+    def __add_cursor_city(self):
+        # ・self.rest_city_df[ID(INDEX)指定]
+        # ・今持っている情報は、X,Yの情報
+        # ・self.imgの値はIDの総和
+        # ・rest_city_dfから見つけたら、img-IDを行う
+        # ・とりあえず、X,Y→ID変換を行う
+
+        #candidates_x = self.rest_city_df[(self.cursor_x <= self.rest_city_df["X"]) & (self.rest_city_df["X"] < self.cursor_x + 1)]
+        #target_cities = candidates_x[(self.cursor_y <= candidates_x["Y"]) & (candidates_x["Y"] < self.cursor_y + 1)]
+
+        count = 0
+        target_cities = self.__xy2city_id(self.cursor_x, self.cursor_y)
         if target_cities is None:
             return 0
-
-        for target_city in target_cities.iterrows():
+        for target_city in target_cities:
             # 同じ座標に複数の街がある場合を考慮してループ
-            # 発見
-            self.near_cities.append(target_city[1])  # target_city[0]:index,  target_city[1]:Series
+            self.near_cities.append(target_city)
             self.found_counter = self.found_counter - 1
             count = count + 1
             if self.found_counter <= 0:
@@ -117,7 +134,7 @@ class CityExplorer:
         window_side = 1
 
         while window_side * 2 < self.rows and window_side * 2 < self.cols:
-            if window_side > 300:
+            if window_side > SEARCH_RANGE:
                 # ここまでくると処理が遅いので、ワープ
                 warp_city = self.rest_city_df.loc[0]
                 self.near_cities.append(warp_city)

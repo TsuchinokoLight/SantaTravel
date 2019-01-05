@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import city_map_manager
 from util import calc_distance
-import pandas as pd
-
+import matplotlib.pyplot as plt
 
 class Grinch:
     def __init__(self, city_map=city_map_manager.CityMapManager()):
@@ -19,6 +18,9 @@ class Grinch:
 
     def keep_record(self, city):
         self.record.append(str(int(city["CityId"])))
+        plt.plot(city["X"], city["Y"], "r.")
+        plt.pause(.0001)
+        print(self.record[-1])
 
     def goto(self, next_city):
         here = self.city_map.here
@@ -58,6 +60,3 @@ class Grinch:
 
             # 記録
             self.keep_record(next_city)
-            print(self.record[-1])
-
-

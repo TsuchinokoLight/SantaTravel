@@ -18,7 +18,6 @@ class CityMapManager:
                 self.rest_city_df, pop_city = self.rest_city_df.drop(index), self.rest_city_df.loc[index]
                 self.rest_city_df.reset_index(drop=True, inplace=True)
                 return pop_city
-
         return None
 
     def pop_next_city(self):
@@ -43,7 +42,7 @@ class CityMapManager:
     def __make_citymap_image(self):
         rows = int(round(self.rest_city_df["Y"].max()))+1  # roundは苦渋の選択・・・
         cols = int(round(self.rest_city_df["X"].max()))+1
-        img = np.zeros((rows, cols), dtype=np.uint8)
+        img = np.zeros((rows, cols), dtype=np.uint32)
 
         # 画素値に街番号入れる処理
         x_arr = self.rest_city_df["X"].values
