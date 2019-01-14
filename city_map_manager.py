@@ -47,7 +47,7 @@ class CityMapManager:
             img[y, x] = id_arr[index]
         return img
 
-    def read_save_file(self, save_file="submission.csv"):
+    def read_save_file(self, save_file="submission_tmp.csv"):
         save_file = pd.read_csv(save_file)
         save_citys = save_file["Path"].iloc
         save_city_max = save_file["Path"].shape[0]
